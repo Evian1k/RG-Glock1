@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -63,6 +62,11 @@ function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [userProfile, setUserProfile] = useState(initialUserProfile);
   const [isLoading, setIsLoading] = useState(true);
+  const [pythonInfo, setPythonInfo] = useState(null);
+  const [pythonFunFact, setPythonFunFact] = useState(null);
+  const [evalInput, setEvalInput] = useState('');
+  const [evalResult, setEvalResult] = useState(null);
+  const [evalLoading, setEvalLoading] = useState(false);
 
   useEffect(() => {
     const loadAppData = () => {
@@ -116,6 +120,20 @@ function App() {
   useEffect(() => {
     if (!isLoading) localStorage.setItem('notifications', JSON.stringify(notifications));
   }, [notifications, isLoading]);
+
+  useEffect(() => {
+    fetch('/api/python-info')
+      .then(res => res.json())
+      .then(data => setPythonInfo(data))
+      .catch(() => setPythonInfo(null));
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/python-fun-fact')
+      .then(res => res.json())
+      .then(data => setPythonFunFact(data.fact))
+      .catch(() => setPythonFunFact(null));
+  }, []);
 
   const addNotification = useCallback((message, type = "system") => {
     const newNotification = {
@@ -217,6 +235,25 @@ function App() {
 
   };
 
+  const handleEvalSubmit = async (e) => {
+    e.preventDefault();
+    setEvalLoading(true);
+    setEvalResult(null);
+    try {
+      const res = await fetch('/api/evaluate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ expression: evalInput })
+      });
+      const data = await res.json();
+      if (data.result !== undefined) setEvalResult(data.result.toString());
+      else setEvalResult('Error: ' + (data.error || 'Unknown error'));
+    } catch {
+      setEvalResult('Error: Could not connect to backend');
+    }
+    setEvalLoading(false);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gradient-bg text-foreground">
@@ -315,6 +352,23 @@ function App() {
         </main>
       </div>
       <Toaster />
+      <footer className="w-full text-center py-4 bg-black bg-opacity-60 text-white text-sm mt-auto">
+        <span role="img" aria-label="python">🐍</span> Powered by <strong>Python</strong> & Flask API — Python is the backbone of our backend, handling all business logic, data, and API services.<br />
+        {pythonInfo && (
+          <span className="block mt-1 text-xs text-gray-300">Python {pythonInfo.python_version} ({pythonInfo.implementation}) on {pythonInfo.system} {pythonInfo.release}</span>
+        )}
+        {pythonFunFact && (
+          <span className="block mt-1 text-xs text-yellow-200 italic">Fun Fact: {pythonFunFact}</span>
+        )}
+        <form onSubmit={handleEvalSubmit} className="mt-2 flex flex-col items-center gap-1">
+          <label htmlFor="py-eval" className="text-xs text-gray-400">Try a Python expression (e.g. <code>2+2</code>, <code>sum([1,2,3])</code>):</label>
+          <div className="flex gap-1">
+            <input id="py-eval" type="text" value={evalInput} onChange={e => setEvalInput(e.target.value)} className="rounded px-2 py-1 text-black text-xs" style={{minWidth:120}} disabled={evalLoading} />
+            <button type="submit" className="bg-green-600 hover:bg-green-700 text-white rounded px-2 py-1 text-xs" disabled={evalLoading || !evalInput}>Eval</button>
+          </div>
+          {evalResult && <span className="text-xs text-blue-200">Result: {evalResult}</span>}
+        </form>
+      </footer>
     </div>
   );
 }
