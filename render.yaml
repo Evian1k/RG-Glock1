@@ -2,8 +2,9 @@ services:
   - type: web
     name: backend-api
     env: python
+    rootDir: backend
     buildCommand: "pip install pipenv && pipenv install --deploy --ignore-pipfile"
-    startCommand: "pipenv run gunicorn project.api_server:app --chdir backend"
+    startCommand: "pipenv run gunicorn project.api_server:app"
     plan: free
     envVars:
       - key: PORT
