@@ -4,10 +4,11 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import stripe
 
+# Create the Flask app
 app = Flask(__name__)
 CORS(app)
 
-# In-memory store for demo (replace with DB in production)
+# Demo product list (in-memory, not for production)
 PRODUCTS = [
     {
         "id": str(uuid.uuid4()),
@@ -185,26 +186,28 @@ PRODUCTS = [
     },
     # Add more as needed for demo
 ]
-ORDERS = []
+ORDERS = []  # Store orders in memory for demo
 
+# Stripe API keys (use environment variables in production)
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "sk_test_...")
 STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", "pk_test_...")
 stripe.api_key = STRIPE_SECRET_KEY
 
 @app.route("/", methods=["GET"])
 def index():
+    """Health check endpoint."""
     return "RG Fling Marketplace API is running. See /api/products for product data.", 200
 
 @app.route("/api/products", methods=["GET", "POST"])
 def products():
+    """Get all products or add a new product."""
     if request.method == "POST":
         if not request.is_json:
             return jsonify({"error": "Request must be JSON"}), 400
         data = request.json
-        # Basic input validation
         required_fields = ["name", "category", "price"]
         for field in required_fields:
-            if field not in data or data[field] is None or str(data[field]).strip() == "":
+            if field not in data or not str(data[field]).strip():
                 return jsonify({"error": f"Missing required field: {field}"}), 400
         try:
             price = float(data["price"])
@@ -226,17 +229,18 @@ def products():
 
 @app.route("/api/orders", methods=["GET"])
 def orders():
+    """Return all orders."""
     return jsonify(ORDERS)
 
 @app.route("/api/create-checkout-session", methods=["POST"])
 def create_checkout_session():
+    """Create a Stripe checkout session for a product purchase."""
     data = request.json
-    product_id = data["product_id"]
+    product_id = data.get("product_id")
     product = next((p for p in PRODUCTS if p["id"] == product_id), None)
     if not product:
         return jsonify({"error": "Product not found"}), 404
-    # Apply 3% fee
-    price_cents = int(product["price"] * 1.03 * 100)
+    price_cents = int(product["price"] * 1.03 * 100)  # Add 3% fee
     try:
         session = stripe.checkout.Session.create(
             payment_method_types=["card"],
@@ -252,7 +256,6 @@ def create_checkout_session():
             success_url=data["success_url"],
             cancel_url=data["cancel_url"],
         )
-        # Save order (pending)
         ORDERS.append({
             "id": str(uuid.uuid4()),
             "product_id": product_id,
@@ -265,21 +268,25 @@ def create_checkout_session():
 
 @app.route("/api/products/physical", methods=["GET"])
 def get_physical_products():
+    """Return only physical products."""
     physical_products = [p for p in PRODUCTS if p["type"] == "physical"]
     return jsonify(physical_products)
 
 @app.route("/api/products/digital", methods=["GET"])
 def get_digital_products():
+    """Return only digital products."""
     digital_products = [p for p in PRODUCTS if p["type"] == "digital"]
     return jsonify(digital_products)
 
 @app.route("/api/products/services", methods=["GET"])
 def get_service_products():
+    """Return only service products."""
     service_products = [p for p in PRODUCTS if p["type"] == "service"]
     return jsonify(service_products)
 
 @app.route("/api/products/by-category", methods=["GET"])
 def get_products_by_category():
+    """Filter products by category."""
     category = request.args.get("category")
     if not category:
         return jsonify({"error": "Category query parameter is required."}), 400
@@ -288,18 +295,18 @@ def get_products_by_category():
 
 @app.route("/api/products/search", methods=["GET"])
 def search_products():
+    """Search products by query string."""
     query = request.args.get("query", "").lower()
     if not query:
-        # If no query, return all products
         return jsonify(PRODUCTS)
     results = [
         p for p in PRODUCTS
         if query in p["name"].lower() or query in p["description"].lower() or query in p["category"].lower()
     ]
     if not results:
-        # If no results, return all products
         return jsonify(PRODUCTS)
     return jsonify(results)
 
 if __name__ == "__main__":
+    # Run the app
     app.run(debug=False)

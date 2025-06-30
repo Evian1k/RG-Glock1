@@ -9,6 +9,7 @@ FLUTTERWAVE_SECRET_KEY = os.environ.get("FLUTTERWAVE_SECRET_KEY")
 
 @app.route("/api/verify-payment", methods=["POST"])
 def verify_payment():
+    """Verify a payment using Flutterwave API."""
     data = request.get_json()
     tx_ref = data.get("tx_ref")
     user_id = data.get("user_id")  # Optional: for associating payment with user
@@ -28,10 +29,10 @@ def verify_payment():
     status = result.get("status")
     payment_data = result.get("data", {})
     if status == "success" and payment_data.get("status") == "successful":
-        # TODO: Update user's VIP status in your database here
-        # Example: update_vip_status(user_id)
+        # Here you would update the user's VIP status in your database
         return jsonify({"success": True, "message": "Payment verified, VIP activated."})
     return jsonify({"success": False, "message": "Payment not successful."}), 400
 
 if __name__ == "__main__":
+    # Run the payment API
     app.run(debug=True)

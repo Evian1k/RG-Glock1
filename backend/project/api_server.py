@@ -6,8 +6,8 @@ import random
 
 app = Flask(__name__)
 
-# In-memory example data
-data = {"1": {"key": "value"}}
+# In-memory example data for demonstration
+example_data = {"1": {"key": "value"}}
 
 # In-memory user store (username: User instance, password hash)
 users = {
@@ -31,43 +31,49 @@ PYTHON_FUN_FACTS = [
 
 @app.route('/api/example', methods=['GET'])
 def get_example():
-    return jsonify(list(data.values())), 200
+    """Return example data."""
+    return jsonify(list(example_data.values())), 200
 
 @app.route('/api/example', methods=['POST'])
 def post_example():
+    """Add new example data."""
     new_data = request.get_json()
-    new_id = str(len(data) + 1)
-    data[new_id] = new_data
+    new_id = str(len(example_data) + 1)
+    example_data[new_id] = new_data
     return jsonify({"id": new_id, **new_data}), 201
 
 @app.route('/api/example/<id>', methods=['PUT'])
 def put_example(id):
-    if id in data:
-        data[id] = request.get_json()
-        return jsonify({"id": id, **data[id]}), 200
+    """Update example data by ID."""
+    if id in example_data:
+        example_data[id] = request.get_json()
+        return jsonify({"id": id, **example_data[id]}), 200
     return jsonify({"error": "Not found"}), 404
 
 @app.route('/api/example/<id>', methods=['DELETE'])
 def delete_example(id):
-    if id in data:
-        del data[id]
+    """Delete example data by ID."""
+    if id in example_data:
+        del example_data[id]
         return '', 204
     return jsonify({"error": "Not found"}), 404
 
 @app.route('/api/python-info', methods=['GET'])
 def python_info():
+    """Return Python environment info."""
     return jsonify(get_python_info()), 200
 
 @app.route('/api/python-fun-fact', methods=['GET'])
 def python_fun_fact():
+    """Return a random Python fun fact."""
     return jsonify({"fact": random.choice(PYTHON_FUN_FACTS)}), 200
 
 @app.route('/api/evaluate', methods=['POST'])
 def evaluate():
+    """Evaluate a simple Python expression (safe built-ins only)."""
     data = request.get_json()
     expr = data.get('expression', '')
     try:
-        # Only allow safe built-ins
         allowed_builtins = {'abs': abs, 'min': min, 'max': max, 'sum': sum, 'len': len, 'round': round}
         result = eval(expr, {"__builtins__": allowed_builtins}, {})
         return jsonify({"result": result}), 200
@@ -76,17 +82,18 @@ def evaluate():
 
 @app.route('/api/login', methods=['POST'])
 def login():
+    """Authenticate a user."""
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
     user_entry = users.get(username)
     if user_entry and check_password(password, user_entry['password_hash']):
-        # In a real app, return a JWT or session token
         return jsonify({"success": True, "user": user_entry['user'].to_dict()}), 200
     return jsonify({"success": False, "error": "Invalid credentials"}), 401
 
 @app.route('/api/signup', methods=['POST'])
 def signup():
+    """Register a new user."""
     data = request.get_json()
     username = data.get('username')
     email = data.get('email')
@@ -104,4 +111,5 @@ def signup():
     return jsonify({"success": True, "user": new_user.to_dict()}), 201
 
 if __name__ == '__main__':
+    # Run the API server
     app.run(port=3000, debug=True)
