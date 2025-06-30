@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
-from utils import get_python_info
-from models import User
-from security import hash_password, check_password
+from .utils import get_python_info
+from .models import User
+from .security import hash_password, check_password
 import random
 
 app = Flask(__name__)

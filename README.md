@@ -2,22 +2,88 @@
 
 ## Table of Contents
 - [Project Overview](#project-overview)
+- [Tech Stack](#tech-stack)
+- [Architecture](#architecture)
+- [Screenshots](#screenshots)
+- [Getting Started](#getting-started)
+- [Dependencies & Packages](#dependencies--packages)
 - [Folder Structure](#folder-structure)
 - [Backend Setup](#backend-setup)
 - [Frontend Setup](#frontend-setup)
 - [Running the Application](#running-the-application)
 - [Environment Variables & Configuration](#environment-variables--configuration)
+- [Authentication](#authentication)
 - [Testing](#testing)
+- [Code Style](#code-style)
 - [Contributing](#contributing)
 - [API Documentation](#api-documentation)
 - [Deployment](#deployment)
 - [Troubleshooting](#troubleshooting)
+- [Roadmap](#roadmap)
+- [License](#license)
+- [Collaborators & Contributors](#collaborators--contributors)
+- [Contact](#contact)
 
 ---
 
 ## Project Overview
 
 **RG-Glock1** is a full-stack application featuring a Python backend and a modern React frontend. The backend provides APIs for marketplace, payment, analytics, and more, while the frontend offers a rich user interface with features like marketplace, wallet, social hub, and more.
+
+---
+
+## Getting Started
+
+To get your development environment up and running, follow these steps:
+
+1. **Clone the repository:**
+   ```bash
+   git clone <your-repo-url>
+   cd RG-Glock1
+   ```
+2. **Set up the backend:**
+   - Install Python (3.8+)
+   - Install pipenv: `pip install pipenv`
+   - Install dependencies:
+     ```bash
+     cd backend
+     pipenv install
+     ```
+   - Run the backend server:
+     ```bash
+     ./run_api.sh
+     ```
+3. **Set up the frontend:**
+   - Install Node.js (v18+ recommended)
+   - Install dependencies:
+     ```bash
+     cd frontend
+     npm install
+     ```
+   - Run the development server:
+     ```bash
+     npm run dev
+     ```
+
+---
+
+## Dependencies & Packages
+
+### Backend (Python)
+- Python 3.8+
+- pipenv
+- Flask
+- stripe
+- requests
+- (See `backend/Pipfile` for the full list)
+
+### Frontend (Node.js/React)
+- Node.js v18+
+- React
+- Vite
+- Tailwind CSS
+- PostCSS
+- (See `frontend/package.json` for the full list)
 
 ---
 
@@ -156,6 +222,40 @@ RG-Glock1/
 - **Frontend:**
   - Deploy static files to Vercel, Netlify, Azure Static Web Apps, or your own server
 
+## Deployment on Render
+
+You can deploy both the backend (Python API) and frontend (React/Vite) to Render using the provided `render.yaml` for Infrastructure as Code (IaC) deployment.
+
+### 1. Prerequisites
+
+- Push your code to a Git repository (GitHub, GitLab, or Bitbucket).
+- [Create a Render account](https://render.com/).
+
+### 2. Deploy Using `render.yaml`
+
+Render will automatically detect the `render.yaml` file and set up both services:
+
+1. **Connect your repository to Render.**
+2. On the Render dashboard, click **New +** > **Blueprint**.
+3. Select your repo and follow the prompts. Render will read `render.yaml` and create:
+   - A **Web Service** for the backend:
+     - Build Command: `pip install pipenv && pipenv install --deploy --ignore-pipfile`
+     - Start Command: `pipenv run gunicorn project.api_server:app --chdir backend`
+     - Environment: Python
+     - PORT: 10000 (or as required by your app)
+   - A **Static Site** for the frontend:
+     - Build Command: `cd frontend && npm install && npm run build`
+     - Publish Directory: `frontend/dist`
+
+4. **Set any required environment variables** in the Render dashboard for secrets, API keys, etc.
+5. **Deploy!** Render will build and deploy both services. You’ll get public URLs for both frontend and backend.
+
+#### Manual (No `render.yaml`)
+
+You can also create the services manually:
+- **Backend:** New Web Service > Python > set build/start commands as above.
+- **Frontend:** New Static Site > set build command and publish directory as above.
+
 ---
 
 ## Troubleshooting
@@ -181,7 +281,7 @@ Specify your license here (e.g., MIT, Apache 2.0, etc.)
 
 We have worked with the following people on this project:
 
-- **owen akelo** — Awaiting 4zz268’s response (Pending Invite)
+- **owen akelo** — Awaiting 4zz268’s response (collaborator)
 - **Ali-Sheikh-Zubeir-Noor** (@Ali-Sheikh-Zubeir-Noor) — Collaborator
 - **kxshiii** (@kxshiii) — Collaborator
 - **Leon Kipchumba** (@LeonKipchumba) — Collaborator
