@@ -1,0 +1,83 @@
+{
+  "info": {
+    "_postman_id": "example-collection-id",
+    "name": "Example API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "GET Example",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/example",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "example"]
+        }
+      }
+    },
+    {
+      "name": "POST Example",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"key\": \"value\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/example",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "example"]
+        }
+      }
+    },
+    {
+      "name": "PUT Example",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"key\": \"new value\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/example/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "example", "1"]
+        }
+      }
+    },
+    {
+      "name": "DELETE Example",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/example/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "example", "1"]
+        }
+      }
+    }
+  ]
+}
