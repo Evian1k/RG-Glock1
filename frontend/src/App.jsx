@@ -7,7 +7,6 @@ import Sidebar from '@/components/layout/Sidebar';
 import MobileHeader from '@/components/layout/MobileHeader';
 import HomeContent from '@/components/sections/HomeContent';
 import SocialHub from '@/components/sections/SocialHub';
-import Marketplace from '@/components/sections/Marketplace';
 import Education from '@/components/sections/Education';
 import Entertainment from '@/components/sections/Entertainment';
 import HealthAI from '@/components/sections/HealthAI';
@@ -309,7 +308,9 @@ function App() {
       case 'social':
         return <SocialHub {...commonProps} />;
       case 'marketplace':
-        return <Marketplace {...commonProps} />;
+        // Instead of rendering React Marketplace, redirect to Flask HTML
+        window.location.href = 'http://localhost:5000/products';
+        return null;
       case 'education':
         return <Education {...commonProps} />;
       case 'entertainment':

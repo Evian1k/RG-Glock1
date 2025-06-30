@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Marketplace Products</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; }
+        .product { border: 1px solid #ccc; padding: 1em; margin-bottom: 1em; border-radius: 8px; }
+        .product img { max-width: 150px; display: block; margin-bottom: 0.5em; }
+        .product-title { font-size: 1.2em; font-weight: bold; }
+        .product-category { color: #888; }
+        .product-price { color: #007b00; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Marketplace Products</h1>
+    {% for product in products %}
+    <div class="product">
+        <img src="{{ product.imageUrl }}" alt="{{ product.name }}">
+        <div class="product-title">{{ product.name }}</div>
+        <div class="product-category">Category: {{ product.category }}</div>
+        <div class="product-price">${{ '%.2f'|format(product.price) }}</div>
+        <div>{{ product.description }}</div>
+        {% if product.discount %}
+        <div style="color: red;">Discount: {{ product.discount }}</div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</body>
+</html>

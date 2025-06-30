@@ -1,6 +1,6 @@
 import os
 import uuid
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import stripe
 
@@ -306,6 +306,11 @@ def search_products():
     if not results:
         return jsonify(PRODUCTS)
     return jsonify(results)
+
+@app.route("/products", methods=["GET"])
+def products_html():
+    """Render the product list as an HTML page using Jinja2."""
+    return render_template("products.html", products=PRODUCTS)
 
 if __name__ == "__main__":
     # Run the app
