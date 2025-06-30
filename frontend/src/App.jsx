@@ -17,6 +17,7 @@ import UserProfileModal from '@/components/features/UserProfileModal';
 import SettingsModal from '@/components/features/SettingsModal';
 import { Loader2 } from 'lucide-react';
 import Login from './components/Login';
+import Marketplace from './sections/Marketplace';
 
 const initialUserProfile = {
   name: "RG Fling User",
@@ -308,9 +309,7 @@ function App() {
       case 'social':
         return <SocialHub {...commonProps} />;
       case 'marketplace':
-        // Instead of rendering React Marketplace, redirect to Flask HTML
-        window.location.href = 'http://localhost:5000/products';
-        return null;
+        return <Marketplace {...commonProps} />;
       case 'education':
         return <Education {...commonProps} />;
       case 'entertainment':
