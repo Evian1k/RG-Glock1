@@ -18,6 +18,7 @@ itsdangerous
 packaging
 typing-extensions
 urllib3
+flask-cors
 idna
 certifi
 blinker
