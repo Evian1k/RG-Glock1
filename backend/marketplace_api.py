@@ -48,7 +48,142 @@ PRODUCTS = [
         "type": "physical",
         "imageUrl": "https://images.unsplash.com/photo-1519864600265-abb23847ef2c",
         "discount": None
-    }
+    },
+    {
+        "id": str(uuid.uuid4()),
+        "name": "Digital Art Pack Vol.1",
+        "category": "Digital Assets",
+        "price": 15.00,
+        "description": "A collection of high-res digital artworks for personal and commercial use.",
+        "type": "digital",
+        "imageUrl": "https://images.unsplash.com/photo-1464983953574-0892a716854b",
+        "discount": None
+    },
+    {
+        "id": str(uuid.uuid4()),
+        "name": "Logo Design Service",
+        "category": "Freelance Services",
+        "price": 120.00,
+        "description": "Professional logo design delivered in 3 days. Includes 3 concepts.",
+        "type": "service",
+        "imageUrl": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d",
+        "discount": "10%"
+    },
+    {
+        "id": str(uuid.uuid4()),
+        "name": "Ebook: Productivity Hacks",
+        "category": "Digital Assets",
+        "price": 8.99,
+        "description": "Downloadable PDF ebook with actionable productivity tips.",
+        "type": "digital",
+        "imageUrl": "https://images.unsplash.com/photo-1516979187457-637abb4f9353",
+        "discount": None
+    },
+    {
+        "id": str(uuid.uuid4()),
+        "name": "Website Audit (Freelance)",
+        "category": "Freelance Services",
+        "price": 75.00,
+        "description": "Detailed website audit and improvement report by a web expert.",
+        "type": "service",
+        "imageUrl": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
+        "discount": None
+    },
+    # Electronics
+    {
+        "id": str(uuid.uuid4()),
+        "name": "iPhone 15 Pro Max",
+        "category": "Electronics",
+        "price": 1299.00,
+        "description": "Apple iPhone 15 Pro Max, 256GB, Space Black, Unlocked.",
+        "type": "physical",
+        "imageUrl": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9",
+        "discount": "5%"
+    },
+    {
+        "id": str(uuid.uuid4()),
+        "name": "Samsung Galaxy S24 Ultra",
+        "category": "Electronics",
+        "price": 1199.00,
+        "description": "Samsung Galaxy S24 Ultra, 512GB, Phantom Black, Unlocked.",
+        "type": "physical",
+        "imageUrl": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8",
+        "discount": None
+    },
+    {
+        "id": str(uuid.uuid4()),
+        "name": "Sony WH-1000XM5 Headphones",
+        "category": "Electronics",
+        "price": 399.99,
+        "description": "Industry-leading noise canceling wireless headphones.",
+        "type": "physical",
+        "imageUrl": "https://images.unsplash.com/photo-1519125323398-675f0ddb6308",
+        "discount": "10%"
+    },
+    # Books
+    {
+        "id": str(uuid.uuid4()),
+        "name": "Atomic Habits",
+        "category": "Books",
+        "price": 16.99,
+        "description": "An Easy & Proven Way to Build Good Habits & Break Bad Ones by James Clear.",
+        "type": "physical",
+        "imageUrl": "https://images.unsplash.com/photo-1516979187457-637abb4f9353",
+        "discount": None
+    },
+    {
+        "id": str(uuid.uuid4()),
+        "name": "The Body Keeps the Score",
+        "category": "Books",
+        "price": 18.99,
+        "description": "Brain, Mind, and Body in the Healing of Trauma by Bessel van der Kolk.",
+        "type": "physical",
+        "imageUrl": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
+        "discount": None
+    },
+    # Home & Kitchen
+    {
+        "id": str(uuid.uuid4()),
+        "name": "Nespresso Vertuo Coffee Maker",
+        "category": "Home & Kitchen",
+        "price": 249.99,
+        "description": "Nespresso Vertuo Coffee and Espresso Machine by De'Longhi.",
+        "type": "physical",
+        "imageUrl": "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
+        "discount": "8%"
+    },
+    {
+        "id": str(uuid.uuid4()),
+        "name": "Amazon Basics Sheet Set",
+        "category": "Home & Kitchen",
+        "price": 29.99,
+        "description": "Lightweight Super Soft Easy Care Microfiber 3 Piece Bed Sheet Set.",
+        "type": "physical",
+        "imageUrl": "https://images.unsplash.com/photo-1519864600265-abb23847ef2c",
+        "discount": None
+    },
+    # Gift Cards
+    {
+        "id": str(uuid.uuid4()),
+        "name": "Amazon eGift Card",
+        "category": "Gift Cards",
+        "price": 50.00,
+        "description": "Amazon eGift Card - Celebration - (Instant Email or Text Delivery)",
+        "type": "digital",
+        "imageUrl": "https://images.unsplash.com/photo-1464983953574-0892a716854b",
+        "discount": None
+    },
+    {
+        "id": str(uuid.uuid4()),
+        "name": "Apple Gift Card",
+        "category": "Gift Cards",
+        "price": 25.00,
+        "description": "Apple Gift Card - App Store, iTunes, iPhone, iPad, AirPods, MacBook, accessories and more (eGift)",
+        "type": "digital",
+        "imageUrl": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d",
+        "discount": None
+    },
+    # Add more as needed for demo
 ]
 ORDERS = []
 
@@ -56,15 +191,30 @@ STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "sk_test_...")
 STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", "pk_test_...")
 stripe.api_key = STRIPE_SECRET_KEY
 
+@app.route("/", methods=["GET"])
+def index():
+    return "RG Fling Marketplace API is running. See /api/products for product data.", 200
+
 @app.route("/api/products", methods=["GET", "POST"])
 def products():
     if request.method == "POST":
+        if not request.is_json:
+            return jsonify({"error": "Request must be JSON"}), 400
         data = request.json
+        # Basic input validation
+        required_fields = ["name", "category", "price"]
+        for field in required_fields:
+            if field not in data or data[field] is None or str(data[field]).strip() == "":
+                return jsonify({"error": f"Missing required field: {field}"}), 400
+        try:
+            price = float(data["price"])
+        except (ValueError, TypeError):
+            return jsonify({"error": "Price must be a number"}), 400
         product = {
             "id": str(uuid.uuid4()),
             "name": data["name"],
             "category": data["category"],
-            "price": float(data["price"]),
+            "price": price,
             "description": data.get("description", ""),
             "type": data.get("type", "physical"),
             "imageUrl": data.get("imageUrl", ""),
@@ -113,5 +263,43 @@ def create_checkout_session():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
+@app.route("/api/products/physical", methods=["GET"])
+def get_physical_products():
+    physical_products = [p for p in PRODUCTS if p["type"] == "physical"]
+    return jsonify(physical_products)
+
+@app.route("/api/products/digital", methods=["GET"])
+def get_digital_products():
+    digital_products = [p for p in PRODUCTS if p["type"] == "digital"]
+    return jsonify(digital_products)
+
+@app.route("/api/products/services", methods=["GET"])
+def get_service_products():
+    service_products = [p for p in PRODUCTS if p["type"] == "service"]
+    return jsonify(service_products)
+
+@app.route("/api/products/by-category", methods=["GET"])
+def get_products_by_category():
+    category = request.args.get("category")
+    if not category:
+        return jsonify({"error": "Category query parameter is required."}), 400
+    filtered_products = [p for p in PRODUCTS if p["category"].lower() == category.lower()]
+    return jsonify(filtered_products)
+
+@app.route("/api/products/search", methods=["GET"])
+def search_products():
+    query = request.args.get("query", "").lower()
+    if not query:
+        # If no query, return all products
+        return jsonify(PRODUCTS)
+    results = [
+        p for p in PRODUCTS
+        if query in p["name"].lower() or query in p["description"].lower() or query in p["category"].lower()
+    ]
+    if not results:
+        # If no results, return all products
+        return jsonify(PRODUCTS)
+    return jsonify(results)
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)

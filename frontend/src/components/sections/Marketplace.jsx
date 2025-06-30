@@ -111,12 +111,7 @@ const Marketplace = ({ setNotifications, currentUser, handleStripeCheckout }) =>
       icon: ShoppingCart,
       description: "Discover unique physical products from creators worldwide.",
       color: "text-blue-400",
-      sampleProducts: [
-        { id: "prod_phys_001", name: "Artisan Leather Wallet", category: "Accessories", priceDisplay: "$49.99", priceId: "price_1PG...", imageUrl: "Handcrafted leather wallet with stitching detail", discount: "15%" },
-        { id: "prod_phys_002", name: "Organic Coffee Beans (1kg)", category: "Groceries", priceDisplay: "$22.50", priceId: "price_1PG...", imageUrl: "Bag of freshly roasted organic coffee beans" },
-        { id: "prod_phys_003", name: "Smart LED Desk Lamp", category: "Home Office", priceDisplay: "$79.00", priceId: "price_1PG...", imageUrl: "Modern LED desk lamp with adjustable brightness" },
-        { id: "prod_phys_004", name: "Yoga Mat Premium", category: "Fitness", priceDisplay: "$35.00", priceId: "price_1PG...", imageUrl: "Eco-friendly premium yoga mat rolled up" },
-      ]
+      type: "physical"
     },
     {
       id: "digital",
@@ -124,12 +119,7 @@ const Marketplace = ({ setNotifications, currentUser, handleStripeCheckout }) =>
       icon: Zap,
       description: "Software, e-books, design templates, and online courses.",
       color: "text-purple-400",
-      sampleProducts: [
-        { id: "prod_digi_001", name: "Pro Video Editing Suite", category: "Software", priceDisplay: "$199.00", priceId: "price_1PG...", imageUrl: "Screenshot of video editing software interface" },
-        { id: "prod_digi_002", name: "Ultimate UI/UX Kit", category: "Design Assets", priceDisplay: "$89.00", priceId: "price_1PG...", imageUrl: "Preview of a comprehensive UI kit for designers", discount: "20%" },
-        { id: "prod_digi_003", name: "Ebook: Mastering Python", category: "Education", priceDisplay: "$19.99", priceId: "price_1PG...", imageUrl: "Cover of an ebook about Python programming" },
-        { id: "prod_digi_004", name: "Stock Photo Bundle", category: "Photography", priceDisplay: "$59.00", priceId: "price_1PG...", imageUrl: "Collage of high-quality stock photos" },
-      ]
+      type: "digital"
     },
     {
       id: "freelance",
@@ -137,35 +127,48 @@ const Marketplace = ({ setNotifications, currentUser, handleStripeCheckout }) =>
       icon: User,
       description: "Hire talented freelancers for your projects or offer your skills.",
       color: "text-green-400",
-      sampleProducts: [
-        { id: "serv_free_001", name: "Custom Logo Design", category: "Graphic Design", priceDisplay: "$150.00", priceId: "price_1PG...", imageUrl: "Portfolio of modern and creative logo designs" },
-        { id: "serv_free_002", name: "React Web Development", category: "Programming", priceDisplay: "$75/hour", priceId: "price_1PG...", imageUrl: "Laptop screen showing React code editor" },
-        { id: "serv_free_003", name: "SEO Content Writing (5 Articles)", category: "Writing", priceDisplay: "$250.00", priceId: "price_1PG...", imageUrl: "Person writing on a laptop with SEO keywords highlighted" },
-        { id: "serv_free_004", name: "Social Media Management", category: "Marketing", priceDisplay: "$300/month", priceId: "price_1PG...", imageUrl: "Dashboard showing social media analytics and engagement" },
-      ]
+      type: "service"
     }
   ];
 
   const [activeMarketplace, setActiveMarketplace] = useState(marketplaces[0]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isListItemModalOpen, setIsListItemModalOpen] = useState(false);
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/products')
+      .then(res => res.json())
+      .then(data => setProducts(data.map(p => ({
+        ...p,
+        priceDisplay: `$${p.price.toFixed(2)}`
+      }))))
+      .catch(() => setProducts([]));
+  }, []);
 
   const handleMarketplaceClick = (marketplace) => {
     setActiveMarketplace(marketplace);
-    setSearchTerm(''); 
+    setSearchTerm('');
     setNotifications(`Exploring ${marketplace.title} marketplace.`, "marketplace");
   };
 
   const handlePurchase = (product) => {
     handleStripeCheckout(product.priceId, product.name);
   };
-  
+
   const handleGenericClick = (featureName) => {
     toast({ title: `🚧 ${featureName} Coming Soon!`, description: "This feature is under development. Check back later! 🚀" });
     setNotifications(`${featureName} interaction attempted.`, "system");
   };
 
-  const filteredProducts = activeMarketplace.sampleProducts.filter(product =>
+  // Filter products by type for the active marketplace
+  const filteredProducts = products.filter(product => {
+    if (activeMarketplace.type === 'service') {
+      // For freelance, match type 'service'
+      return product.type === 'service';
+    }
+    return product.type === activeMarketplace.type;
+  }).filter(product =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
