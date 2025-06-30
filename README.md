@@ -2,6 +2,9 @@
 
 ## Table of Contents
 - [Project Overview](#project-overview)
+- [Tech Stack](#tech-stack)
+- [Architecture](#architecture)
+- [Screenshots](#screenshots)
 - [Getting Started](#getting-started)
 - [Dependencies & Packages](#dependencies--packages)
 - [Folder Structure](#folder-structure)
@@ -9,11 +12,17 @@
 - [Frontend Setup](#frontend-setup)
 - [Running the Application](#running-the-application)
 - [Environment Variables & Configuration](#environment-variables--configuration)
+- [Authentication](#authentication)
 - [Testing](#testing)
+- [Code Style](#code-style)
 - [Contributing](#contributing)
 - [API Documentation](#api-documentation)
 - [Deployment](#deployment)
 - [Troubleshooting](#troubleshooting)
+- [Roadmap](#roadmap)
+- [License](#license)
+- [Collaborators & Contributors](#collaborators--contributors)
+- [Contact](#contact)
 
 ---
 
@@ -272,7 +281,7 @@ Specify your license here (e.g., MIT, Apache 2.0, etc.)
 
 We have worked with the following people on this project:
 
-- **owen akelo** — Awaiting 4zz268’s response (Pending Invite)
+- **owen akelo** — Awaiting 4zz268’s response (collaborator)
 - **Ali-Sheikh-Zubeir-Noor** (@Ali-Sheikh-Zubeir-Noor) — Collaborator
 - **kxshiii** (@kxshiii) — Collaborator
 - **Leon Kipchumba** (@LeonKipchumba) — Collaborator
