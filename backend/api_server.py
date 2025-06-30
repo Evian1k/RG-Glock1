@@ -1,5 +1,6 @@
 # Flask API server for backend
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
+import os
 
 app = Flask(__name__)
 
@@ -33,3 +34,19 @@ def delete_example(id):
         del data[id]
         return '', 204
     return jsonify({"error": "Not found"}), 404
+
+# Serve React static files
+@app.route('/static/<path:filename>')
+def static_files(filename):
+    return send_from_directory(os.path.join(app.root_path, '../public'), filename)
+
+# Serve React index.html for all other routes (SPA)
+@app.route('/<path:path>')
+def serve_react(path):
+    if os.path.exists(os.path.join(app.root_path, '../public', path)):
+        return send_from_directory(os.path.join(app.root_path, '../public'), path)
+    return send_from_directory(os.path.join(app.root_path, '../public'), 'index.html')
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(port=port, debug=True)

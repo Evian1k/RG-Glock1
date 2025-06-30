@@ -1,0 +1,18 @@
+
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+  <stop offset="0%" style="stop-color:rgb(52, 211, 153);stop-opacity:1" />
+  <stop offset="100%" style="stop-color:rgb(59, 130, 246);stop-opacity:1" />
+</linearGradient>
+<linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+  <stop offset="0%" style="stop-color:rgb(96, 165, 250);stop-opacity:1" />
+  <stop offset="100%" style="stop-color:rgb(16, 185, 129);stop-opacity:1" />
+</linearGradient>
+</defs>
+<circle cx="32" cy="32" r="30" fill="url(#grad1)"/>
+<path d="M20 28C20 25.7909 21.7909 24 24 24H40C42.2091 24 44 25.7909 44 28V36C44 38.2091 42.2091 40 40 40H24C21.7909 40 20 38.2091 20 36V28Z" fill="rgba(255,255,255,0.2)" stroke="white" stroke-width="2"/>
+<path d="M26 30L32 34L38 30" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M22.6561 20.0406C22.0648 19.6043 21.5296 19.1117 21.0606 18.5621C18.8805 16.0111 18 12.7838 18 9.5C18 8.67157 18.6716 8 19.5 8H22.5C23.3284 8 24 8.67157 24 9.5C24 11.9853 24.9482 14.2353 26.5858 15.8729C27.0548 16.3419 27.4674 16.8671 27.818 17.4394" stroke="url(#grad2)" stroke-width="3" stroke-linecap="round"/>
+<path d="M41.3439 43.9594C41.9352 44.3957 42.4704 44.8883 42.9394 45.4379C45.1195 47.9889 46 51.2162 46 54.5C46 55.3284 45.3284 56 44.5 56H41.5C40.6716 56 40 55.3284 40 54.5C40 52.0147 39.0518 49.7647 37.4142 48.1271C36.9452 47.6581 36.5326 47.1329 36.182 46.5606" stroke="url(#grad2)" stroke-width="3" stroke-linecap="round"/>
+</svg>
