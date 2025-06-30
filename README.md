@@ -218,10 +218,12 @@ RG-Glock1/
 You can deploy both the backend (Python API) and frontend (React/Vite) to Render using the provided `render.yaml` for Infrastructure as Code (IaC) deployment.
 
 ### 1. Prerequisites
+
 - Push your code to a Git repository (GitHub, GitLab, or Bitbucket).
 - [Create a Render account](https://render.com/).
 
 ### 2. Deploy Using `render.yaml`
+
 Render will automatically detect the `render.yaml` file and set up both services:
 
 1. **Connect your repository to Render.**
@@ -229,7 +231,7 @@ Render will automatically detect the `render.yaml` file and set up both services
 3. Select your repo and follow the prompts. Render will read `render.yaml` and create:
    - A **Web Service** for the backend:
      - Build Command: `pip install pipenv && pipenv install --deploy --ignore-pipfile`
-     - Start Command: `pipenv run python backend/marketplace_api.py`
+     - Start Command: `pipenv run gunicorn project.api_server:app --chdir backend`
      - Environment: Python
      - PORT: 10000 (or as required by your app)
    - A **Static Site** for the frontend:
@@ -240,6 +242,7 @@ Render will automatically detect the `render.yaml` file and set up both services
 5. **Deploy!** Render will build and deploy both services. You’ll get public URLs for both frontend and backend.
 
 #### Manual (No `render.yaml`)
+
 You can also create the services manually:
 - **Backend:** New Web Service > Python > set build/start commands as above.
 - **Frontend:** New Static Site > set build command and publish directory as above.

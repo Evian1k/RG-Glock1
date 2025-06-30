@@ -3,7 +3,7 @@ services:
     name: backend-api
     env: python
     buildCommand: "pip install pipenv && pipenv install --deploy --ignore-pipfile"
-    startCommand: "pipenv run python backend/marketplace_api.py"
+    startCommand: "pipenv run gunicorn project.api_server:app --chdir backend"
     plan: free
     envVars:
       - key: PORT
