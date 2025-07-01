@@ -1,13 +1,13 @@
+from flask import Blueprint, request, jsonify
 import os
 import requests
-from flask import Flask, request, jsonify
 
-app = Flask(__name__)
+payment_bp = Blueprint('payment', __name__)
 
 # Set your Flutterwave secret key as an environment variable for security
 FLUTTERWAVE_SECRET_KEY = os.environ.get("FLUTTERWAVE_SECRET_KEY")
 
-@app.route("/api/verify-payment", methods=["POST"])
+@payment_bp.route("/api/verify-payment", methods=["POST"])
 def verify_payment():
     """Verify a payment using Flutterwave API."""
     data = request.get_json()
@@ -32,7 +32,3 @@ def verify_payment():
         # Here you would update the user's VIP status in your database
         return jsonify({"success": True, "message": "Payment verified, VIP activated."})
     return jsonify({"success": False, "message": "Payment not successful."}), 400
-
-if __name__ == "__main__":
-    # Run the payment API
-    app.run(debug=True)

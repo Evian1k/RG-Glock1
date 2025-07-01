@@ -1,10 +1,10 @@
-from flask import Flask, request, jsonify
+from flask import Blueprint, request, jsonify
 from .utils import get_python_info
 from .models import User
 from .security import hash_password, check_password
 import random
 
-app = Flask(__name__)
+api_server_bp = Blueprint('api_server', __name__)
 
 # In-memory example data for demonstration
 example_data = {"1": {"key": "value"}}
@@ -29,12 +29,12 @@ PYTHON_FUN_FACTS = [
     "You can use underscores in numeric literals for readability (e.g., 1_000_000)."
 ]
 
-@app.route('/api/example', methods=['GET'])
+@api_server_bp.route('/api/example', methods=['GET'])
 def get_example():
     """Return example data."""
     return jsonify(list(example_data.values())), 200
 
-@app.route('/api/example', methods=['POST'])
+@api_server_bp.route('/api/example', methods=['POST'])
 def post_example():
     """Add new example data."""
     new_data = request.get_json()
@@ -42,7 +42,7 @@ def post_example():
     example_data[new_id] = new_data
     return jsonify({"id": new_id, **new_data}), 201
 
-@app.route('/api/example/<id>', methods=['PUT'])
+@api_server_bp.route('/api/example/<id>', methods=['PUT'])
 def put_example(id):
     """Update example data by ID."""
     if id in example_data:
@@ -50,7 +50,7 @@ def put_example(id):
         return jsonify({"id": id, **example_data[id]}), 200
     return jsonify({"error": "Not found"}), 404
 
-@app.route('/api/example/<id>', methods=['DELETE'])
+@api_server_bp.route('/api/example/<id>', methods=['DELETE'])
 def delete_example(id):
     """Delete example data by ID."""
     if id in example_data:
@@ -58,17 +58,17 @@ def delete_example(id):
         return '', 204
     return jsonify({"error": "Not found"}), 404
 
-@app.route('/api/python-info', methods=['GET'])
+@api_server_bp.route('/api/python-info', methods=['GET'])
 def python_info():
     """Return Python environment info."""
     return jsonify(get_python_info()), 200
 
-@app.route('/api/python-fun-fact', methods=['GET'])
+@api_server_bp.route('/api/python-fun-fact', methods=['GET'])
 def python_fun_fact():
     """Return a random Python fun fact."""
     return jsonify({"fact": random.choice(PYTHON_FUN_FACTS)}), 200
 
-@app.route('/api/evaluate', methods=['POST'])
+@api_server_bp.route('/api/evaluate', methods=['POST'])
 def evaluate():
     """Evaluate a simple Python expression (safe built-ins only)."""
     data = request.get_json()
@@ -80,7 +80,7 @@ def evaluate():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
-@app.route('/api/login', methods=['POST'])
+@api_server_bp.route('/api/login', methods=['POST'])
 def login():
     """Authenticate a user."""
     data = request.get_json()
@@ -91,7 +91,7 @@ def login():
         return jsonify({"success": True, "user": user_entry['user'].to_dict()}), 200
     return jsonify({"success": False, "error": "Invalid credentials"}), 401
 
-@app.route('/api/signup', methods=['POST'])
+@api_server_bp.route('/api/signup', methods=['POST'])
 def signup():
     """Register a new user."""
     data = request.get_json()
@@ -109,7 +109,3 @@ def signup():
         "password_hash": hash_password(password)
     }
     return jsonify({"success": True, "user": new_user.to_dict()}), 201
-
-if __name__ == '__main__':
-    # Run the API server
-    app.run(port=3000, debug=True)

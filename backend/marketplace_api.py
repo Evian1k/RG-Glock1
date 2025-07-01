@@ -1,12 +1,12 @@
 import os
 import uuid
-from flask import Flask, request, jsonify, render_template
+from flask import Blueprint, request, jsonify, render_template
 from flask_cors import CORS
 import stripe
 
-# Create the Flask app
-app = Flask(__name__)
-CORS(app)
+marketplace_bp = Blueprint('marketplace', __name__)
+CORS_kwargs = {}
+CORS(marketplace_bp, **CORS_kwargs)
 
 # Demo product list (in-memory, not for production)
 PRODUCTS = [
@@ -54,12 +54,12 @@ STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "sk_test_...")
 STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", "pk_test_...")
 stripe.api_key = STRIPE_SECRET_KEY
 
-@app.route("/", methods=["GET"])
+@marketplace_bp.route("/", methods=["GET"])
 def index():
     """Health check endpoint."""
     return "RG Fling Marketplace API is running. See /api/products for product data.", 200
 
-@app.route("/api/products", methods=["GET", "POST"])
+@marketplace_bp.route("/api/products", methods=["GET", "POST"])
 def products():
     """Get all products or add a new product."""
     if request.method == "POST":
@@ -88,12 +88,12 @@ def products():
         return jsonify(product), 201
     return jsonify(PRODUCTS)
 
-@app.route("/api/orders", methods=["GET"])
+@marketplace_bp.route("/api/orders", methods=["GET"])
 def orders():
     """Return all orders."""
     return jsonify(ORDERS)
 
-@app.route("/api/create-checkout-session", methods=["POST"])
+@marketplace_bp.route("/api/create-checkout-session", methods=["POST"])
 def create_checkout_session():
     """Create a Stripe checkout session for a product purchase."""
     data = request.json
@@ -127,25 +127,25 @@ def create_checkout_session():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
-@app.route("/api/products/physical", methods=["GET"])
+@marketplace_bp.route("/api/products/physical", methods=["GET"])
 def get_physical_products():
     """Return only physical products."""
     physical_products = [p for p in PRODUCTS if p["type"] == "physical"]
     return jsonify(physical_products)
 
-@app.route("/api/products/digital", methods=["GET"])
+@marketplace_bp.route("/api/products/digital", methods=["GET"])
 def get_digital_products():
     """Return only digital products."""
     digital_products = [p for p in PRODUCTS if p["type"] == "digital"]
     return jsonify(digital_products)
 
-@app.route("/api/products/services", methods=["GET"])
+@marketplace_bp.route("/api/products/services", methods=["GET"])
 def get_service_products():
     """Return only service products."""
     service_products = [p for p in PRODUCTS if p["type"] == "service"]
     return jsonify(service_products)
 
-@app.route("/api/products/by-category", methods=["GET"])
+@marketplace_bp.route("/api/products/by-category", methods=["GET"])
 def get_products_by_category():
     """Filter products by category."""
     category = request.args.get("category")
@@ -154,7 +154,7 @@ def get_products_by_category():
     filtered_products = [p for p in PRODUCTS if p["category"].lower() == category.lower()]
     return jsonify(filtered_products)
 
-@app.route("/api/products/search", methods=["GET"])
+@marketplace_bp.route("/api/products/search", methods=["GET"])
 def search_products():
     """Search products by query string."""
     query = request.args.get("query", "").lower()
@@ -168,11 +168,7 @@ def search_products():
         return jsonify(PRODUCTS)
     return jsonify(results)
 
-@app.route("/products", methods=["GET"])
+@marketplace_bp.route("/products", methods=["GET"])
 def products_html():
     """Render the product list as an HTML page using Jinja2."""
     return render_template("products.html", products=PRODUCTS)
-
-if __name__ == "__main__":
-    # Run the app
-    app.run(debug=False)
