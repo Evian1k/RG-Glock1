@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: backend-api
+    env: python
+    rootDir: backend
+    buildCommand: pip install pipenv && pipenv install --deploy --ignore-pipfile
+    startCommand: pipenv run gunicorn project.api_server:app
+    plan: free
+    envVars:
+      - key: PORT
+        value: 10000
+    autoDeploy: true
+    buildFilter:
+      paths:
+        - backend/**
+  - type: static
+    name: frontend
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    plan: free
+    buildFilter:
+      paths:
+        - frontend/**

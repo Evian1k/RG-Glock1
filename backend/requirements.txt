@@ -1,0 +1,26 @@
+# This file is auto-generated for Render compatibility.
+# It is recommended to use Pipfile for dependency management.
+Flask
+Flask-SQLAlchemy
+Flask-Migrate
+requests
+stripe
+gunicorn
+python-dotenv
+PyJWT
+psycopg2-binary
+alembic
+Werkzeug
+Jinja2
+Mako
+MarkupSafe
+itsdangerous
+packaging
+typing-extensions
+urllib3
+flask-cors
+idna
+certifi
+blinker
+click
+greenlet
