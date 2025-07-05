@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
@@ -9,6 +8,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { getStripe } from '../../../frontend/src/lib/stripe';
 
 const ProductCard = ({ product, onPurchase }) => (
   <Card className="glass-effect overflow-hidden hover:shadow-2xl transition-all duration-300 card-interactive flex flex-col">
@@ -104,7 +104,7 @@ const ListItemModal = ({ isOpen, onOpenChange, setNotifications, currentUser }) 
 };
 
 
-const Marketplace = ({ setNotifications, currentUser, handleStripeCheckout }) => {
+const Marketplace = ({ setNotifications, currentUser }) => {
   const marketplaces = [
     {
       id: "physical",
@@ -157,8 +157,34 @@ const Marketplace = ({ setNotifications, currentUser, handleStripeCheckout }) =>
     setNotifications(`Exploring ${marketplace.title} marketplace.`, "marketplace");
   };
 
-  const handlePurchase = (product) => {
-    handleStripeCheckout(product.priceId, product.name);
+  const handlePurchase = async (product) => {
+    // TODO: Integrate Stripe.js for real payment flow
+    try {
+      // Example: Call backend to create payment intent (amount should be fetched from product info)
+      const res = await fetch('/api/payment/create-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: 1000, currency: 'usd' }) // Replace with real amount
+      });
+      const data = await res.json();
+      if (data.clientSecret) {
+        const stripe = await getStripe();
+        const { error } = await stripe.confirmCardPayment(data.clientSecret, {
+          payment_method: {
+            card: { /* TODO: collect card details using Stripe Elements */ },
+          },
+        });
+        if (error) {
+          toast({ title: 'Payment Error', description: error.message, variant: 'destructive' });
+        } else {
+          toast({ title: 'Payment Success', description: 'Your payment was successful!', variant: 'default' });
+        }
+      } else {
+        toast({ title: 'Payment Error', description: data.error || 'Could not create payment intent.', variant: 'destructive' });
+      }
+    } catch (err) {
+      toast({ title: 'Network Error', description: 'Could not connect to payment API.', variant: 'destructive' });
+    }
   };
   
   const handleGenericClick = (featureName) => {

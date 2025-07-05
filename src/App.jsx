@@ -16,6 +16,7 @@ import NotificationsPanel from '@/components/features/NotificationsPanel';
 import { navigationItems } from '@/config/navigation';
 import UserProfileModal from '@/components/features/UserProfileModal';
 import SettingsModal from '@/components/features/SettingsModal';
+import AuthForms from '@/components/AuthForms';
 import { Loader2 } from 'lucide-react';
 
 const initialUserProfile = {
@@ -67,8 +68,11 @@ function App() {
   const [evalInput, setEvalInput] = useState('');
   const [evalResult, setEvalResult] = useState(null);
   const [evalLoading, setEvalLoading] = useState(false);
+  const [authedUser, setAuthedUser] = useState(null); // Auth state, do not persist in localStorage for security
 
   useEffect(() => {
+    // NOTE: The following useEffect hooks use localStorage for demo purposes only.
+    // TODO: Replace with backend API calls for persistent, secure data storage.
     const loadAppData = () => {
       try {
         const savedTheme = localStorage.getItem('isDarkMode');
@@ -254,6 +258,12 @@ function App() {
     setEvalLoading(false);
   };
 
+  const handleAuthSuccess = (user) => {
+    setAuthedUser(user);
+    // TODO: Use secure HTTP-only cookies or backend session for real authentication
+    // Do NOT store user info in localStorage for production apps
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gradient-bg text-foreground">
@@ -263,6 +273,10 @@ function App() {
         <p className="text-lg text-muted-foreground">Preparing your ultimate platform experience!</p>
       </div>
     );
+  }
+
+  if (!authedUser) {
+    return <AuthForms onAuthSuccess={handleAuthSuccess} />;
   }
 
   const renderContent = () => {

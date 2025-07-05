@@ -1,3 +1,5 @@
+# This file was renamed to calendar_utils.py to avoid shadowing the standard library 'calendar' module.
+
 # Calendar and event management
 
 class Event:

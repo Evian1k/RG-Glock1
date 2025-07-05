@@ -23,37 +23,31 @@ const TransactionRow = ({ tx }) => (
   </div>
 );
 
-const RGXWallet = ({ rgxCoins, setNotifications, updateRgxCoins }) => {
+const RGXWallet = ({ rgxCoins, setNotifications, updateRgxCoins, currentUser }) => {
   const [showSendModal, setShowSendModal] = useState(false);
   const [sendAmount, setSendAmount] = useState('');
   const [recipient, setRecipient] = useState('');
   const [transactions, setTransactions] = useState([]);
 
+  // Fetch transactions from backend
   useEffect(() => {
-    const savedTransactions = localStorage.getItem('rgxTransactions');
-    if (savedTransactions) {
-      setTransactions(JSON.parse(savedTransactions));
-    } else {
-      const initialTxs = [
-        { id: Date.now() - 20000, type: 'credit', amount: 500, description: 'Daily Spin Reward', date: new Date(Date.now() - 86400000 * 1).toISOString() },
-        { id: Date.now() - 10000, type: 'debit', amount: 150, description: 'Marketplace: Ergonomic Chair', date: new Date(Date.now() - 86400000 * 2).toISOString() },
-        { id: Date.now(), type: 'credit', amount: 1000, description: 'Welcome RGX Grant', date: new Date(Date.now() - 86400000 * 5).toISOString() },
-      ].sort((a,b) => new Date(b.date) - new Date(a.date));
-      setTransactions(initialTxs);
+    async function fetchTxs() {
+      try {
+        const res = await fetch('/api/transactions', {
+          headers: { Authorization: `Bearer ${currentUser?.access_token}` }
+        });
+        if (res.ok) {
+          setTransactions(await res.json());
+        }
+      } catch (e) {
+        // Optionally handle error
+      }
     }
-  }, []);
+    if (currentUser?.access_token) fetchTxs();
+  }, [currentUser]);
 
-  useEffect(() => {
-    localStorage.setItem('rgxTransactions', JSON.stringify(transactions));
-  }, [transactions]);
-
-
-  const handleFeatureClick = (title, description) => {
-    toast({ title: `🚧 ${title} Coming Soon!`, description: description || "This wallet feature is under development. 🚀" });
-    setNotifications(`Accessed "${title}" in RGX Wallet.`, "wallet");
-  };
-
-  const handleSendCoins = () => {
+  // Create transaction via backend
+  const handleSendCoins = async () => {
     const amountNum = parseFloat(sendAmount);
     if (!recipient.trim() || !sendAmount || amountNum <= 0) {
       toast({ title: "Invalid Input 😟", description: "Please enter a valid recipient and amount.", variant: "destructive" });
@@ -63,22 +57,35 @@ const RGXWallet = ({ rgxCoins, setNotifications, updateRgxCoins }) => {
       toast({ title: "Insufficient Funds 💸", description: "You don't have enough RGX to send this amount.", variant: "destructive" });
       return;
     }
-    
-    updateRgxCoins(-amountNum);
-    toast({ title: "Coins Sent! 💸", description: `${amountNum} RGX sent to ${recipient}.` });
-    
-    const newTx = {
-      id: Date.now(),
-      type: 'debit',
-      amount: amountNum,
-      description: `Sent to ${recipient}`,
-      date: new Date().toISOString()
-    };
-    setTransactions(prev => [newTx, ...prev].sort((a,b) => new Date(b.date) - new Date(a.date)));
-    setNotifications(`You sent ${amountNum} RGX to ${recipient}.`, "wallet");
-    setShowSendModal(false);
-    setSendAmount('');
-    setRecipient('');
+    try {
+      const res = await fetch('/api/transactions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${currentUser?.access_token}`
+        },
+        body: JSON.stringify({ type: 'debit', amount: amountNum, description: `Sent to ${recipient}` })
+      });
+      if (res.ok) {
+        const newTx = await res.json();
+        setTransactions(prev => [newTx, ...prev]);
+        updateRgxCoins(-amountNum);
+        toast({ title: "Coins Sent! 💸", description: `${amountNum} RGX sent to ${recipient}.` });
+        setNotifications(`You sent ${amountNum} RGX to ${recipient}.`, "wallet");
+        setShowSendModal(false);
+        setSendAmount('');
+        setRecipient('');
+      } else {
+        toast({ title: "Error", description: "Could not send coins.", variant: "destructive" });
+      }
+    } catch {
+      toast({ title: "Network Error", description: "Could not connect to backend.", variant: "destructive" });
+    }
+  };
+
+  const handleFeatureClick = (title, description) => {
+    toast({ title: `🚧 ${title} Coming Soon!`, description: description || "This wallet feature is under development. 🚀" });
+    setNotifications(`Accessed "${title}" in RGX Wallet.`, "wallet");
   };
 
   const walletFeatures = [

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -168,51 +167,52 @@ const SocialHub = ({ setNotifications, currentUser }) => {
   const [newPostContent, setNewPostContent] = useState('');
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [isAIChatModalOpen, setIsAIChatModalOpen] = useState(false);
-  
+
+  // Fetch posts from backend
   useEffect(() => {
-    const savedPosts = localStorage.getItem('socialPosts');
-    if (savedPosts) {
-      setPosts(JSON.parse(savedPosts));
-    } else {
-      const initialPosts = [
-        {
-          id: 1, user: "Alex Johnson", userHandle: "alexj", userAvatarUrl: null, avatarColor: "bg-green-500", time: "2h ago",
-          content: "Just earned 500 RGX Coins from the education platform! 🎓 This platform is amazing for learning and earning. Highly recommend checking out the new AI courses.",
-          imageUrl: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Y29tcHV0ZXJ8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60",
-          likes: 24, likedByMe: false, commentsData: [
-            {id: 101, user: currentUser.name, userHandle: currentUser.username, text: "Congrats Alex!", userAvatarUrl: null, avatarColor: currentUser.avatarColor},
-            {id: 102, user: "Jane Doe", userHandle: "janed", text: "Wow, that's awesome!", userAvatarUrl: null, avatarColor: "bg-pink-500"},
-          ], shares: 3
-        },
-        {
-          id: 2, user: "Sarah Chen", userHandle: "sarahc", userAvatarUrl: null, avatarColor: "bg-purple-500", time: "4h ago",
-          content: "Amazing marketplace deals today! Found the perfect freelancer for my project. 💼 The quality of work is top-notch.",
-          imageUrl: null, likes: 18, likedByMe: true, commentsData: [], shares: 2
+    async function fetchPosts() {
+      try {
+        const res = await fetch('/api/posts', {
+          headers: { Authorization: `Bearer ${currentUser?.access_token}` }
+        });
+        if (res.ok) {
+          setPosts(await res.json());
         }
-      ];
-      setPosts(initialPosts);
+      } catch (e) {
+        // Optionally handle error
+      }
     }
-  }, [currentUser.name, currentUser.username, currentUser.avatarColor]);
+    if (currentUser?.access_token) fetchPosts();
+  }, [currentUser]);
 
-  useEffect(() => {
-    localStorage.setItem('socialPosts', JSON.stringify(posts));
-  }, [posts]);
-
-  const handleCreatePost = () => {
+  // Create post via backend
+  const handleCreatePost = async () => {
     if (!newPostContent.trim()) {
       toast({ title: "Empty Post! 📝", description: "Please write something to post.", variant: "destructive" });
       return;
     }
-    const newPost = {
-      id: Date.now(), user: currentUser.name, userHandle: currentUser.username, userAvatarUrl: currentUser.avatarUrl, 
-      avatarColor: currentUser.avatarColor, time: "Just now", content: newPostContent, imageUrl: null, 
-      likes: 0, likedByMe: false, commentsData: [], shares: 0
-    };
-    setPosts(prevPosts => [newPost, ...prevPosts]);
-    setNewPostContent('');
-    setShowCreatePost(false);
-    toast({ title: "Post Created! 🎉", description: "Your thoughts are now shared with the world." });
-    setNotifications("You created a new post.", "social");
+    try {
+      const res = await fetch('/api/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${currentUser?.access_token}`
+        },
+        body: JSON.stringify({ content: newPostContent })
+      });
+      if (res.ok) {
+        const newPost = await res.json();
+        setPosts(prev => [newPost, ...prev]);
+        setNewPostContent('');
+        setShowCreatePost(false);
+        toast({ title: "Post Created! 🎉", description: "Your thoughts are now shared with the world." });
+        setNotifications("You created a new post.", "social");
+      } else {
+        toast({ title: "Error", description: "Could not create post.", variant: "destructive" });
+      }
+    } catch {
+      toast({ title: "Network Error", description: "Could not connect to backend.", variant: "destructive" });
+    }
   };
 
   const handleLikePost = (postId) => {
