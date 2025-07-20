@@ -1,122 +1,165 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { Card, CardHeader, CardContent, CardFooter } from './ui/card';
+import { toast } from './ui/use-toast';
+import { Eye, EyeOff, User, Lock } from 'lucide-react';
 
-// Human-friendly authentication form: supports sign up, log in, password confirmation, and mode switching
-export default function Login({ onLogin }) {
-  const [mode, setMode] = useState("login"); // 'login' or 'signup'
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+const Login = () => {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    username_or_email: '',
+    password: ''
+  });
 
-  // Simulate a user database in localStorage
-  const getUsers = () => JSON.parse(localStorage.getItem("users") || "{}")
-  const saveUser = (username, password) => {
-    const users = getUsers();
-    users[username] = password;
-    localStorage.setItem("users", JSON.stringify(users));
-  };
-  const checkUser = (username, password) => {
-    const users = getUsers();
-    return users[username] && users[username] === password;
-  };
-  const userExists = (username) => {
-    const users = getUsers();
-    return !!users[username];
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
-    if (!username || !password || (mode === "signup" && !confirmPassword)) {
-      setError("Please fill in all fields.");
-      return;
-    }
-    if (mode === "signup") {
-      if (userExists(username)) {
-        setError("Username already exists. Please log in or use another.");
-        return;
+    setLoading(true);
+
+    try {
+      const result = await login(formData);
+
+      if (result.success) {
+        toast({
+          title: "Welcome back!",
+          description: `Logged in as ${result.user.username}`
+        });
+        navigate('/');
+      } else {
+        toast({
+          title: "Login Failed",
+          description: result.error,
+          variant: "destructive"
+        });
       }
-      if (password !== confirmPassword) {
-        setError("Passwords do not match.");
-        return;
-      }
-      saveUser(username, password);
-      setSuccess("Sign up successful! You can now log in.");
-      setMode("login");
-      setPassword("");
-      setConfirmPassword("");
-      return;
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
     }
-    // login
-    if (!userExists(username)) {
-      setError("User not found. Please sign up first.");
-      return;
-    }
-    if (!checkUser(username, password)) {
-      setError("Incorrect password.");
-      return;
-    }
-    setError("");
-    onLogin(username); // pass username to parent
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-200 dark:from-gray-900 dark:to-gray-800">
-      <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-900 shadow-lg rounded-lg p-8 w-full max-w-xs flex flex-col gap-4">
-        <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-white mb-2">
-          {mode === "login" ? "Sign In" : "Sign Up"}
-        </h2>
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={e => setUsername(e.target.value)}
-          className="rounded px-3 py-2 border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-800 dark:text-white"
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          className="rounded px-3 py-2 border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-800 dark:text-white"
-        />
-        {mode === "signup" && (
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={e => setConfirmPassword(e.target.value)}
-            className="rounded px-3 py-2 border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-800 dark:text-white"
-          />
-        )}
-        {error && <div className="text-red-500 text-xs text-center">{error}</div>}
-        {success && <div className="text-green-600 text-xs text-center">{success}</div>}
-        <button
-          type="submit"
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded py-2 mt-2 transition-colors"
-        >
-          {mode === "login" ? "Login" : "Sign Up"}
-        </button>
-        <div className="text-xs text-center text-gray-500 dark:text-gray-400 mt-2">
-          {mode === "login" ? (
-            <>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-1">
+          <div className="flex items-center justify-center mb-4">
+            <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-2xl">RG</span>
+            </div>
+          </div>
+          <h2 className="text-2xl font-bold text-center text-gray-900">
+            Welcome back
+          </h2>
+          <p className="text-center text-gray-600">
+            Sign in to your RG Fling account
+          </p>
+        </CardHeader>
+
+        <form onSubmit={handleSubmit}>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="username_or_email">Username or Email</Label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input
+                  id="username_or_email"
+                  name="username_or_email"
+                  type="text"
+                  required
+                  value={formData.username_or_email}
+                  onChange={handleChange}
+                  placeholder="Enter your username or email"
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Enter your password"
+                  className="pl-10 pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <input
+                  id="remember-me"
+                  name="remember-me"
+                  type="checkbox"
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                />
+                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
+                  Remember me
+                </label>
+              </div>
+
+              <div className="text-sm">
+                <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
+                  Forgot your password?
+                </a>
+              </div>
+            </div>
+          </CardContent>
+
+          <CardFooter className="flex flex-col space-y-4">
+            <Button
+              type="submit"
+              className="w-full bg-blue-600 hover:bg-blue-700"
+              disabled={loading}
+            >
+              {loading ? "Signing in..." : "Sign in"}
+            </Button>
+            
+            <p className="text-center text-sm text-gray-600">
               Don't have an account?{' '}
-              <button type="button" className="text-blue-600 hover:underline" onClick={() => { setMode("signup"); setError(""); setSuccess(""); }}>
-                Sign Up
-              </button>
-            </>
-          ) : (
-            <>
-              Already have an account?{' '}
-              <button type="button" className="text-blue-600 hover:underline" onClick={() => { setMode("login"); setError(""); setSuccess(""); }}>
-                Log In
-              </button>
-            </>
-          )}
-        </div>
-      </form>
+              <Link
+                to="/register"
+                className="font-medium text-blue-600 hover:text-blue-500"
+              >
+                Sign up
+              </Link>
+            </p>
+          </CardFooter>
+        </form>
+      </Card>
     </div>
   );
-}
+};
+
+export default Login;

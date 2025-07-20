@@ -203,13 +203,8 @@ export default defineConfig({
 		},
 		allowedHosts: true,
 		proxy: {
-<<<<<<< HEAD:vite.config.js
-			'/api': 'http://localhost:3000'
-		}
-=======
 			'/api': 'http://localhost:5000',
 		},
->>>>>>> 3a3dced608da4e1c7c7706a88b74a2b92885f236:frontend/vite.config.js
 	},
 	resolve: {
 		extensions: ['.jsx', '.js', '.tsx', '.ts', '.json', ],

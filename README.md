@@ -1,296 +1,301 @@
-# RG-Glock1 Project
+# RG Fling - Multi-Feature Platform
 
-## Table of Contents
-- [Project Overview](#project-overview)
-- [Tech Stack](#tech-stack)
-- [Architecture](#architecture)
-- [Screenshots](#screenshots)
-- [Getting Started](#getting-started)
-- [Dependencies & Packages](#dependencies--packages)
-- [Folder Structure](#folder-structure)
-- [Backend Setup](#backend-setup)
-- [Frontend Setup](#frontend-setup)
-- [Running the Application](#running-the-application)
-- [Environment Variables & Configuration](#environment-variables--configuration)
-- [Authentication](#authentication)
-- [Testing](#testing)
-- [Code Style](#code-style)
-- [Contributing](#contributing)
-- [API Documentation](#api-documentation)
-- [Deployment](#deployment)
-- [Troubleshooting](#troubleshooting)
-- [Roadmap](#roadmap)
-- [License](#license)
-- [Collaborators & Contributors](#collaborators--contributors)
-- [Contact](#contact)
+RG Fling is a comprehensive web application that combines marketplace, education, and entertainment features into one unified platform. Built with Flask (backend) and React (frontend), it provides a modern, scalable solution for users to buy/sell products, learn new skills, and enjoy entertainment content.
 
----
+## 🚀 Features
 
-## Project Overview
+### 🛒 Marketplace
+- Product browsing with search and filters
+- Shopping cart functionality
+- Order management and tracking
+- Wishlist system
+- Seller dashboard for product management
 
-**RG-Glock1** is a full-stack application featuring a Python backend and a modern React frontend. The backend provides APIs for marketplace, payment, analytics, and more, while the frontend offers a rich user interface with features like marketplace, wallet, social hub, and more.
+### 📚 Education
+- Course catalog with categories and levels
+- Video-based learning content
+- Interactive quizzes and assessments
+- Progress tracking and certificates
+- Instructor tools for course creation
 
----
+### 🎵 Entertainment
+- Music and video streaming
+- Game library
+- Personal playlists
+- Content discovery and recommendations
 
-## Getting Started
+### 👤 User Management
+- JWT-based authentication
+- Role-based access control (User, Seller, Admin)
+- Profile management
+- Activity tracking
 
-To get your development environment up and running, follow these steps:
+### 🔧 Admin Features
+- User management and moderation
+- Content management
+- Order and payment oversight
+- Analytics and reporting
+- System configuration
 
-1. **Clone the repository:**
-   ```bash
-   git clone <your-repo-url>
-   cd RG-Glock1
-   ```
-2. **Set up the backend:**
-   - Install Python (3.8+)
-   - Install pipenv: `pip install pipenv`
-   - Install dependencies:
-     ```bash
-     cd backend
-     pipenv install
-     ```
-   - Run the backend server:
-     ```bash
-     ./run_api.sh
-     ```
-3. **Set up the frontend:**
-   - Install Node.js (v18+ recommended)
-   - Install dependencies:
-     ```bash
-     cd frontend
-     npm install
-     ```
-   - Run the development server:
-     ```bash
-     npm run dev
-     ```
+## 🛠️ Technology Stack
 
----
+### Backend
+- **Flask** - Python web framework
+- **PostgreSQL** - Primary database (SQLite for development)
+- **SQLAlchemy** - ORM for database operations
+- **Flask-JWT-Extended** - Authentication and authorization
+- **Flask-CORS** - Cross-origin resource sharing
+- **Flask-Mail** - Email functionality
+- **Marshmallow** - Data validation and serialization
 
-## Dependencies & Packages
+### Frontend
+- **React 18** - Frontend framework
+- **React Router** - Client-side routing
+- **Axios** - HTTP client for API calls
+- **Tailwind CSS** - Utility-first CSS framework
+- **Radix UI** - Accessible component primitives
+- **Lucide React** - Icon library
+- **Vite** - Build tool and development server
 
-### Backend (Python)
-- Python 3.8+
-- pipenv
-- Flask
-- stripe
-- requests
-- (See `backend/Pipfile` for the full list)
-
-### Frontend (Node.js/React)
-- Node.js v18+
-- React
-- Vite
-- Tailwind CSS
-- PostCSS
-- (See `frontend/package.json` for the full list)
-
----
-
-## Folder Structure
+## 📁 Project Structure
 
 ```
-RG-Glock1/
-├── backend/                # Python backend (APIs, business logic)
-│   ├── marketplace_api.py  # Marketplace API endpoints
-│   ├── payment_api.py      # Payment API endpoints
-│   ├── run_api.sh          # Script to run backend server
-│   ├── Pipfile, Pipfile.lock # Python dependencies
-│   ├── postman-examples/   # Postman collection for API testing
-│   └── project/            # Core backend modules
-│       ├── admin.py, ai_utils.py, ... # Various backend utilities
-│       └── __pycache__/    # Python bytecode cache
-│   └── templates/          # HTML templates (e.g., products.html)
-├── frontend/               # React frontend (Vite + Tailwind)
-│   ├── index.html          # Main HTML entry
-│   ├── package.json        # Frontend dependencies
-│   ├── vite.config.js      # Vite configuration
-│   ├── tailwind.config.js  # Tailwind CSS config
-│   ├── postcss.config.js   # PostCSS config
-│   ├── plugins/            # Custom Vite/React plugins
-│   ├── src/                # Main React source code
-│   │   ├── App.jsx, main.jsx, index.css
+rg-fling/
+├── backend/
+│   ├── app/
+│   │   ├── models/          # Database models
+│   │   ├── routes/          # API endpoints
+│   │   ├── schemas/         # Data validation schemas
+│   │   └── __init__.py      # App factory
+│   ├── config.py           # Configuration settings
+│   ├── run.py             # Application entry point
+│   └── requirements.txt   # Python dependencies
+├── frontend/
+│   ├── src/
 │   │   ├── components/     # Reusable UI components
-│   │   ├── features/       # Feature-specific components
-│   │   ├── layout/         # Layout components
-│   │   ├── sections/       # Main app sections (Marketplace, Wallet, etc.)
-│   │   ├── ui/             # UI primitives (button, card, etc.)
-│   │   ├── config/         # App configuration
-│   │   └── lib/            # Utility functions
-│   └── public/             # Static assets (e.g., logo)
-└── README.md               # Project documentation
+│   │   ├── contexts/       # React contexts
+│   │   ├── pages/         # Page components
+│   │   └── App.jsx        # Main App component
+│   ├── package.json       # Node.js dependencies
+│   └── vite.config.js     # Vite configuration
+└── README.md
 ```
 
----
+## 🚀 Getting Started
 
-## Backend Setup
+### Prerequisites
+- Python 3.8+
+- Node.js 16+
+- PostgreSQL (for production) or SQLite (for development)
 
-1. **Install Python (3.8+)**
-2. **Install pipenv:**
-   ```bash
-   pip install pipenv
-   ```
-3. **Install dependencies:**
+### Backend Setup
+
+1. **Navigate to backend directory:**
    ```bash
    cd backend
-   pipenv install
    ```
-4. **Run the backend server:**
+
+2. **Create virtual environment:**
    ```bash
-   ./run_api.sh
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
-   Or, if you want to run a specific API module:
+
+3. **Install dependencies:**
    ```bash
-   pipenv run python project/api_server.py
+   pip install -r requirements.txt
    ```
 
----
+4. **Set up environment variables:**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
 
-## Frontend Setup
+5. **Initialize database:**
+   ```bash
+   python run.py create-db
+   python run.py seed-db  # Optional: Add sample data
+   ```
 
-1. **Install Node.js (v18+ recommended)**
-2. **Install dependencies:**
+6. **Run the backend server:**
+   ```bash
+   python run.py
+   ```
+
+The backend will be available at `http://localhost:5000`
+
+### Frontend Setup
+
+1. **Navigate to frontend directory:**
    ```bash
    cd frontend
+   ```
+
+2. **Install dependencies:**
+   ```bash
    npm install
    ```
-3. **Run the development server:**
+
+3. **Start development server:**
    ```bash
    npm run dev
    ```
-   The app will be available at `http://localhost:5173` (or as shown in the terminal).
 
----
+The frontend will be available at `http://localhost:5173`
 
-## Running the Application
+## 📊 Sample Data
 
-- **Development:**
-  - Start backend (see above)
-  - Start frontend (see above)
-- **Production:**
-  - Build frontend:
-    ```bash
-    npm run build
-    ```
-  - Serve the built frontend with your preferred static server (e.g., `serve` npm package) or integrate with backend as needed.
-  - Deploy backend using your preferred method (e.g., Gunicorn, Docker, cloud service).
+The application includes sample data for testing:
 
----
+### Default Users
+- **Admin**: `admin` / `admin123`
+- **Seller**: `seller1` / `seller123`  
+- **User**: `user1` / `user123`
 
-## Environment Variables & Configuration
+### Sample Content
+- Products in various categories
+- Educational courses
+- Entertainment content (music, videos, games)
 
-- **Backend:**
-  - Configure environment variables as needed for database, API keys, etc. (see code for details)
-  - Example: `.env` file or export variables in shell
-- **Frontend:**
-  - Configure API endpoints in `src/lib/utils.js` or as needed
+## 🔧 Configuration
 
----
+### Environment Variables
 
-## Testing
+Create a `.env` file in the backend directory:
 
-- **Backend:**
-  - Use Postman collection in `backend/postman-examples/postman.json` to test API endpoints
-  - Add Python tests as needed (pytest recommended)
-- **Frontend:**
-  - Add tests using your preferred React testing library (e.g., Jest, React Testing Library)
+```env
+# Flask Configuration
+FLASK_ENV=development
+SECRET_KEY=your-secret-key
+JWT_SECRET_KEY=your-jwt-secret
 
----
+# Database
+DATABASE_URL=sqlite:///rgfling.db
+# For PostgreSQL: postgresql://user:password@localhost/rgfling
 
-## Contributing
+# Mail (optional)
+MAIL_SERVER=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your-email@gmail.com
+MAIL_PASSWORD=your-app-password
+
+# Payment (optional)
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_SECRET_KEY=sk_test_...
+```
+
+## 📚 API Documentation
+
+### Authentication Endpoints
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login
+- `GET /api/auth/profile` - Get user profile
+- `PUT /api/auth/profile` - Update user profile
+
+### Marketplace Endpoints
+- `GET /api/marketplace/products` - List products
+- `GET /api/marketplace/products/{id}` - Get product details
+- `POST /api/marketplace/cart/add` - Add to cart
+- `GET /api/marketplace/cart` - Get cart contents
+- `POST /api/marketplace/orders` - Create order
+
+### Education Endpoints
+- `GET /api/education/courses` - List courses
+- `GET /api/education/courses/{id}` - Get course details
+- `POST /api/education/courses/{id}/enroll` - Enroll in course
+- `GET /api/education/my-courses` - Get enrolled courses
+
+### Entertainment Endpoints
+- `GET /api/entertainment/music` - List music tracks
+- `GET /api/entertainment/videos` - List videos
+- `GET /api/entertainment/games` - List games
+- `POST /api/entertainment/playlists` - Create playlist
+
+## 🚀 Deployment
+
+### Using Render (Recommended)
+
+1. **Backend Deployment:**
+   - Create a new Web Service on Render
+   - Connect your GitHub repository
+   - Set build command: `pip install -r backend/requirements.txt`
+   - Set start command: `cd backend && python run.py`
+   - Add environment variables
+
+2. **Frontend Deployment:**
+   - Create a new Static Site on Render
+   - Set build command: `cd frontend && npm install && npm run build`
+   - Set publish directory: `frontend/dist`
+
+3. **Database:**
+   - Create a PostgreSQL database on Render
+   - Update `DATABASE_URL` environment variable
+
+### Using Railway
+
+1. **Deploy Backend:**
+   ```bash
+   railway login
+   railway new
+   railway add
+   ```
+
+2. **Deploy Frontend:**
+   - Deploy as a separate service or use a CDN
+
+## 🧪 Testing
+
+### Backend Testing
+```bash
+cd backend
+python -m pytest
+```
+
+### Frontend Testing
+```bash
+cd frontend
+npm test
+```
+
+## 🤝 Contributing
 
 1. Fork the repository
-2. Create a new branch (`git checkout -b feature/your-feature`)
-3. Commit your changes (`git commit -am 'Add new feature'`)
-4. Push to the branch (`git push origin feature/your-feature`)
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
----
+## 📝 License
 
-## API Documentation
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-- See `backend/postman-examples/postman.json` for example requests
-- Main API modules: `marketplace_api.py`, `payment_api.py`, `project/api_server.py`
-- Add docstrings and comments in code for further documentation
+## 🆘 Support
 
----
+If you encounter any issues or have questions:
 
-## Deployment
+1. Check the [Issues](https://github.com/yourusername/rg-fling/issues) page
+2. Create a new issue with detailed information
+3. Contact support at support@rgfling.com
 
-- **Backend:**
-  - Deploy using Gunicorn, Docker, or a cloud provider (Azure, AWS, etc.)
-- **Frontend:**
-  - Deploy static files to Vercel, Netlify, Azure Static Web Apps, or your own server
+## 🎯 Roadmap
 
-## Deployment on Render
+- [ ] Real-time notifications
+- [ ] Advanced search with AI
+- [ ] Mobile app development
+- [ ] Payment gateway integration
+- [ ] Multi-language support
+- [ ] Advanced analytics dashboard
+- [ ] Social features and messaging
+- [ ] API rate limiting and caching
 
-You can deploy both the backend (Python API) and frontend (React/Vite) to Render using the provided `render.yaml` for Infrastructure as Code (IaC) deployment.
+## 🏆 Acknowledgments
 
-### 1. Prerequisites
-
-- Push your code to a Git repository (GitHub, GitLab, or Bitbucket).
-- [Create a Render account](https://render.com/).
-
-### 2. Deploy Using `render.yaml`
-
-Render will automatically detect the `render.yaml` file and set up both services:
-
-1. **Connect your repository to Render.**
-2. On the Render dashboard, click **New +** > **Blueprint**.
-3. Select your repo and follow the prompts. Render will read `render.yaml` and create:
-   - A **Web Service** for the backend:
-     - Build Command: `pip install pipenv && pipenv install --deploy --ignore-pipfile`
-     - Start Command: `pipenv run gunicorn project.api_server:app --chdir backend`
-     - Environment: Python
-     - PORT: 10000 (or as required by your app)
-   - A **Static Site** for the frontend:
-     - Build Command: `cd frontend && npm install && npm run build`
-     - Publish Directory: `frontend/dist`
-
-4. **Set any required environment variables** in the Render dashboard for secrets, API keys, etc.
-5. **Deploy!** Render will build and deploy both services. You’ll get public URLs for both frontend and backend.
-
-#### Manual (No `render.yaml`)
-
-You can also create the services manually:
-- **Backend:** New Web Service > Python > set build/start commands as above.
-- **Frontend:** New Static Site > set build command and publish directory as above.
+- Built with love using Flask and React
+- UI components from Radix UI
+- Icons from Lucide React
+- Styling with Tailwind CSS
 
 ---
 
-## Troubleshooting
-
-- **Backend:**
-  - Ensure all dependencies are installed with pipenv
-  - Check Python version compatibility
-  - Review logs for errors
-- **Frontend:**
-  - Ensure Node.js version is compatible
-  - Delete `node_modules` and reinstall if issues occur
-  - Check browser console for errors
-
----
-
-## License
-
-Specify your license here (e.g., MIT, Apache 2.0, etc.)
-
----
-
-## Collaborators & Contributors
-
-We have worked with the following people on this project:
-
-- **owen akelo** — Awaiting 4zz268’s response (collaborator)
-- **Ali-Sheikh-Zubeir-Noor** (@Ali-Sheikh-Zubeir-Noor) — Collaborator
-- **kxshiii** (@kxshiii) — Collaborator
-- **Leon Kipchumba** (@LeonKipchumba) — Collaborator
-- **rejo132** (@rejo132) — Collaborator
-- **tresoraban** (@tresoraban)  — Collaborator
-- **wairimu273** (@wairimu273) — Collaborator
-
----
-
-## Contact
-
-For questions or support, open an issue or contact the maintainer.
+**RG Fling** - *Your Ultimate Multi-Feature Platform* 🚀
